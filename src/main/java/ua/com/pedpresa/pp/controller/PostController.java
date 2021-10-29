@@ -21,11 +21,8 @@ import java.util.Optional;
 public class PostController {
 
     private final PostModRepo postModRepo;
-
     @Autowired
     private WordService wordService;
-    @Autowired
-    private KeyWordRepo keyWordRepo;
 
     public PostController(PostModRepo postModRepo) {
         this.postModRepo = postModRepo;
@@ -45,16 +42,7 @@ public class PostController {
         Optional<PostMod> editPost = postModRepo.findById(id);
         List<PostMod> res = new ArrayList<>();
         editPost.ifPresent(res::add);
-        model.addAttribute("post",res);
-        return "edit";
-    }
-    @GetMapping("/edit/{id}/delete")
-    public String newsDelete(@PathVariable (value = "id") long id, Model model) {
-        if (!postModRepo.existsById(id)) return "news";
-        postModRepo.deleteById(id);
-        Iterable<PostMod> postMods = postModRepo.findAll();
-        model.addAttribute("posts",postMods);
-        return "news";
+        return getKey(model, res);
     }
 
     @PostMapping("/edit/{id}")
@@ -62,7 +50,7 @@ public class PostController {
             @PathVariable (value = "id") long id,
             @RequestParam(required = false) String text_old,
             @RequestParam(required = false) String text_new,
-                    Model model) {
+            Model model) {
         wordService.addSinonim(text_old,text_new);
         Optional<PostMod> editPost = postModRepo.findById(id);
         List<PostMod> res = new ArrayList<>();
@@ -74,27 +62,23 @@ public class PostController {
             pm.setText_mod_tag(pm.getText_mod_tag().replaceAll(text_old,text_new));
             postModRepo.save(pm);
             res.set(0,pm);
-
         }
+        return getKey(model, res);
+    }
+
+    private String getKey(Model model, List<PostMod> res) {
+        wordService.getKeywords(res.get(0).getTitle_mod(),res.get(0).getText_mod());
+        model.addAttribute("freqList",wordService.getWordsList(res.get(0).getTitle_mod(),res.get(0).getText_mod()));
+        model.addAttribute("count",postModRepo.count());
         model.addAttribute("post",res);
         return "edit";
     }
-    @GetMapping("/keywords")
-    public String keyWordsEdit(Model model){
-        Iterable<KeyWord> keyWords = keyWordRepo.findAll();
-        model.addAttribute("keywords",keyWords);
-        return "keywords";
-    }
-    @PostMapping("/keywords")
-    public String keyWordsEdit(
-            @RequestParam(required = true, defaultValue = "") String new_key,
-            @RequestParam(required = false) String new_tag,
-            @RequestParam(required = false) String new_pict,
-            Model model){
-        KeyWord keyWord = new KeyWord(new_key, new_tag, new_pict);
-        keyWordRepo.save(keyWord);
-        Iterable<KeyWord> keyWords = keyWordRepo.findAll();
-        model.addAttribute("keywords",keyWords);
-        return "keywords";
+
+    @GetMapping("/edit/{id}/delete")
+    public String newsDelete(@PathVariable (value = "id") long id, Model model) {
+        if (!postModRepo.existsById(id)) return "news";
+        postModRepo.deleteById(id);
+        wordService.updateNewsSeq();
+        return newsList(model);
     }
 }
