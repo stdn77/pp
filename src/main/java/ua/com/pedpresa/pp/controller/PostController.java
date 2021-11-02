@@ -1,5 +1,6 @@
 package ua.com.pedpresa.pp.controller;
 
+import org.springframework.web.bind.annotation.*;
 import ua.com.pedpresa.pp.domain.KeyWord;
 import ua.com.pedpresa.pp.domain.PostMod;
 import ua.com.pedpresa.pp.repos.KeyWordRepo;
@@ -8,10 +9,6 @@ import ua.com.pedpresa.pp.service.WordService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,7 +39,19 @@ public class PostController {
         Optional<PostMod> editPost = postModRepo.findById(id);
         List<PostMod> res = new ArrayList<>();
         editPost.ifPresent(res::add);
-        return getKey(model, res);
+        String title = res.get(0).getTitle_mod();
+        String text = res.get(0).getText_mod();
+        List<String> kws = wordService.getKeywords(title,text);
+        kws.forEach(System.out::println);
+//        if(kws.size()>1 && res.get(0).getMain_keyword()!=null) {
+//            if(kws.contains(res.get(0).getMain_keyword())) System.out.println(res.get(0).getMain_keyword()+" 1111");
+//            kws.add(res.get(0).getMain_keyword());
+//        }
+        model.addAttribute("keywords", kws);
+        model.addAttribute("freqList",wordService.getWordsList(title,text));
+        model.addAttribute("count",postModRepo.count());
+        model.addAttribute("post",res);
+        return "edit";
     }
 
     @PostMapping("/edit/{id}")
@@ -51,6 +60,8 @@ public class PostController {
             @RequestParam(required = false) String text_old,
             @RequestParam(required = false) String text_new,
             Model model) {
+
+        System.out.println("*************************** HERE");
         wordService.addSinonim(text_old,text_new);
         Optional<PostMod> editPost = postModRepo.findById(id);
         List<PostMod> res = new ArrayList<>();
@@ -63,16 +74,27 @@ public class PostController {
             postModRepo.save(pm);
             res.set(0,pm);
         }
-        return getKey(model, res);
+        return newsEdit(id,model);
     }
 
-    private String getKey(Model model, List<PostMod> res) {
-        wordService.getKeywords(res.get(0).getTitle_mod(),res.get(0).getText_mod());
-        model.addAttribute("freqList",wordService.getWordsList(res.get(0).getTitle_mod(),res.get(0).getText_mod()));
-        model.addAttribute("count",postModRepo.count());
-        model.addAttribute("post",res);
-        return "edit";
+    @PostMapping("/edit/{id}/key/")
+    public String choiceKeyWord(
+            @PathVariable (value = "id") long id,
+            @RequestParam(required = false) String kw,
+            Model model){
+
+        Optional<PostMod> editPost = postModRepo.findById(id);
+        List<PostMod> res = new ArrayList<>();
+        editPost.ifPresent(res::add);
+        if(res.size() == 1) {
+            PostMod pm = res.get(0);
+            pm.setMain_keyword(kw);
+            pm.setPict(wordService.getPict(kw));
+            postModRepo.save(pm);
+        }
+        return newsEdit(id,model);
     }
+
 
     @GetMapping("/edit/{id}/delete")
     public String newsDelete(@PathVariable (value = "id") long id, Model model) {

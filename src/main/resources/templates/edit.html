@@ -40,13 +40,23 @@
             <div class="col" th:utext="${el.text_mod_tag}"></div>
             <div class="col-2 vl" align="center">
                 <td><a th:href="'/edit/'+${el.id}+'/delete'" class="btn btn-danger btn-sm mt-2" role="button" aria-pressed="true">Удалить</a></td>
-                <td><a th:href="'/edit/'+${el.id}+'/delete'" class="btn btn-success btn-sm mt-2" role="button" aria-pressed="true">Отправить</a></td><br>
-                <td><a th:href="'/keywords'" class="text mt-2">Ключевые слова</a></td>
+                <td><a th:href="'/edit/'+${el.id}+'/delete'" class="btn btn-success btn-sm mt-2" role="button" aria-pressed="true">Отправить</a></td><br><br>
+                <td><a th:href="'/keywords'" class="text mt-3">Ключевые слова</a></td>
                 <div class="border">
-                    <div th:each="kw : ${freqList} ">
-                        <td th:text="${kw}"/>
+                    <div th:each="fw : ${freqList} ">
+                        <td th:text="${fw}"/>
                     </div>
                 </div>
+                <br>
+                <form method="post"  th:action="'/edit/'+${el.id}+'/key/'">
+                    <div class="form-check" th:each="kw : ${keywords}">
+                        <input class="form-check-input pl-2" type="radio" name="kw" id="keyword" th:value="*{kw}"  checked />
+                        <label class="form-check-label" th:text="${kw}" for="keyword"/>
+                    </div>
+                    <button type="submit" class="btn btn-success mt-1" role="button" aria-pressed="true">Обновить</button>
+                </form>
+                <td th:text="${el.main_keyword}=='null' ? '' : ${el.main_keyword}"></td>
+                <img th:src="${el.pict}" width="220"/>
             </div>
         </div>
     </div>

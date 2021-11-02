@@ -26,7 +26,7 @@ public class KeywordController {
             @RequestParam(required = false) String new_tag,
             @RequestParam(required = false) String new_pict,
             Model model){
-        KeyWord keyWord = new KeyWord(new_key, new_tag, new_pict);
+        KeyWord keyWord = new KeyWord(new_key, new_tag, new_pict,0L);
         keyWordRepo.save(keyWord);
         Iterable<KeyWord> keyWords = keyWordRepo.findAll();
         model.addAttribute("keywords",keyWords);

@@ -74,11 +74,17 @@ public class WordService {
         }
     }
 
+    /**
+     * @param title
+     * @param text
+     * !!! important (more keywords with two title & one text)
+     * @return List of words with Freq >2 (minFreq)
+     * Use 2title + 1text (for more weight of title)
+     */
     public List<String> getWordsList(String title, String text) {
         List<String> freqList = new ArrayList<>();
-
         List<String> wordsList = List.of(stringNormalize(title+" "+title+" "+text).trim().split(" "));
-        int minFreq = Math.max(wordsList.size() / 100, 2);
+        int minFreq = Math.max(wordsList.size() / 150, 2);
 
         LinkedHashMap<String, Integer> reverseSortedMap = getSortedMap(wordsList);
 
@@ -106,34 +112,42 @@ public class WordService {
         return reverseSortedMap;
     }
 
-    public void getKeywords(String title, String text){
+    /**
+     * @param title
+     * @param text
+     * @return List of keywords from DB equals with text
+     * May change
+     */
+    public List<String> getKeywords(String title, String text){
         List<String> wordsFromRepo = new ArrayList<>();
         for (KeyWord key : keyWordRepo.findAll()) {
             wordsFromRepo.add(key.getKey_words());
         }
-        List<String> freqListWithNum = getWordsList(title,text);
+        List<String> freqListWithNum = getWordsList(stringNormalize(title),stringNormalize(text));
         List<String> freqList = new ArrayList<>();
-        List<String> res = new ArrayList<>();
+        List<String> keywords = new ArrayList<>();
         for (String s : freqListWithNum) {
-            freqList.add(s.substring(0,s.indexOf("-")-1));
+            freqList.add(s.substring(0,s.lastIndexOf("-")-1));
+            System.out.println("|"+s.substring(0,s.lastIndexOf("-")-1)+"|");
         }
         int partOfword;
         for (String s : wordsFromRepo) {
             partOfword = 0;
             String[] w = s.split(" ");
             for (int i = 0; i < w.length; i++) {
+//                System.out.println(w[i]);
                 if (freqList.contains(wordNormalize(w[i]))) {
+//                    keywords.add(s);
                     partOfword++;
-                    System.out.println(s);
+//                    System.out.println(s);
                 }
             }
             System.out.println(w.length +" === "+partOfword);
             if (partOfword == w.length) {
-                res.add(s);
-                System.out.println(s);
-            }
+                keywords.add(s);
+            } else if (w.length > 1 && partOfword > 1 && w.length == partOfword-1) keywords.add(s);
         }
-
+        return keywords;
     }
 
     public void updateNewsSeq() {
@@ -178,8 +192,19 @@ public class WordService {
         text
                 .replace(",.",",")
                 .replace("  "," ")
-                .replace("СOVID","COVID");
+                .replace("COVID","СOVID");
         return text;
+    }
+
+    public String getPict(String kw){
+        if (kw==null) return "";
+        Iterable<KeyWord> kwAll = keyWordRepo.findAll();
+        for (KeyWord keyWord : kwAll) {
+            if(keyWord.getKey_words().equals(kw)) {
+              return   keyWord.getPict();
+            }
+        }
+        return "";
     }
 
 }
