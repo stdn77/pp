@@ -7,47 +7,40 @@
 </head>
 <body>
 <header th:insert="parts/header :: header"></header>
+
 <div class="container-fluid align-items-center bg-light">
-    <br>
-    <form method="post">
-        <div class="form-group row" >
-            <div class="col">
-                <input type="text"  name="new_key" placeholder="Новое слово/фраза" class="form-control"/>
-            </div>
-            <div class="col">
-                <input type="text"  name="new_tag" placeholder="Тэг" class="form-control"/>
-            </div>
-            <div class="col">
-                <input type="text"  name="new_pict" placeholder="Картинка" class="form-control"/>
-            </div>
-            <div class="col-1">
-                <button type="submit" class="btn btn-success">Добавить</button>
-            </div>
+    <div class="row">
+        <div class="col-6">
+            <form method="post" th:action="'/keyedit/'+${key.id}+'/save'">
+                    <h4 th:text="'№ '+${key.id}+' из '+${count}"></h4>
+                    <label for="keyword">Ключевое слово</label>
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control" id="keyword" name="keyword" th:value="${key.key_words}">
+                    </div>
+                    <label for="tag">Tag</label>
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control" id="tag" name="tag" th:value="${key.tag}">
+                    </div>
+                    <label for="pict">Pict</label>
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control" id="pict" name="pict" th:value="${key.pict}">
+                    </div>
+                    <label for="id_pict">Id pict</label>
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control" id="id_pict" name="id_pict" th:value="${key.id_pict}">
+                    </div>
+                        <button type="submit" role="button" class="btn btn-success" aria-pressed="true" >Сохранить</button>
+                        <a th:href="'/keyedit/'+${key.id}+'/delete'" role="button" class="btn btn-danger ml-10" aria-pressed="true">Удалить</a>
+                        <a th:href="${key.id} > 1 ? '/keyedit/'+${key.id -1} : '/keywords'" role="button" class="btn btn-outline-primary ml-10" aria-pressed="true"> << </a>
+                         <a th:href="${key.id} < ${count} ? '/keyedit/'+${key.id +1} : '/keywords'" role="button" class="btn btn-outline-primary ml-10"  aria-pressed="true"> >> </a>
+            </form>
         </div>
-    </form>
-    <br>
+
+        <div class="col-6 mt-3" align="center">
+            <img th:src="${key.pict}" height="300">
+        </div>
+    </div>
 </div>
-
-<table class="table table-sm table-responsive">
-    <tr>
-        <th>ID</th>
-        <th>Ключевое слово</th>
-        <th>Тег</th>
-        <th>Картинка</th>
-        <th width="20">Edit</th>
-        <th width="20">Del</th>
-    </tr>
-    <tr th:each="el : ${keywords}">
-        <td th:text="${el.id} + ' '"></td>
-        <td th:marginwidth="10"  th:text="${el.key_words}"></td>
-        <td th:text="${el.tag}"></td>
-        <td th:text="${el.pict}"></td>
-        <!--        <td><button type="button" class="btn btn-warning">Edit</button></td>-->
-        <td><a th:href="'/edit/'+${el.id}" class="btn btn-outline-success btn-sm" role="button" aria-pressed="true">Edit</a></td>
-        <td><a th:href="'/edit/'+${el.id}+'/delete'" class="btn btn-outline-danger btn-sm" role="button" aria-pressed="true">Del</a></td>
-    </tr>
-</table>
-
 <!--<header th:insert="parts/footer :: footer"></header>-->
 </body>
 </html>

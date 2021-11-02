@@ -61,7 +61,7 @@ public class PostController {
             @RequestParam(required = false) String text_new,
             Model model) {
 
-        System.out.println("*************************** HERE");
+//        System.out.println("*************************** HERE");
         wordService.addSinonim(text_old,text_new);
         Optional<PostMod> editPost = postModRepo.findById(id);
         List<PostMod> res = new ArrayList<>();
@@ -98,6 +98,14 @@ public class PostController {
 
     @GetMapping("/edit/{id}/delete")
     public String newsDelete(@PathVariable (value = "id") long id, Model model) {
+        if (!postModRepo.existsById(id)) return "news";
+        postModRepo.deleteById(id);
+        wordService.updateNewsSeq();
+        return newsList(model);
+    }
+
+    @GetMapping("/edit/{id}/push")
+    public String newsPush(@PathVariable (value = "id") long id, Model model) {
         if (!postModRepo.existsById(id)) return "news";
         postModRepo.deleteById(id);
         wordService.updateNewsSeq();

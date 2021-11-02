@@ -11,17 +11,20 @@
     <br>
     <form method="post">
         <div class="form-group row">
-            <div class="col">
+            <div class="col-3">
                 <input type="text"  name="new_key" placeholder="Новое слово/фраза" class="form-control"/>
             </div>
-            <div class="col">
+            <div class="col-2">
                 <input type="text"  name="new_tag" placeholder="Тэг" class="form-control"/>
             </div>
-            <div class="col">
+            <div class="col-4">
                 <input type="text"  name="new_pict" placeholder="Картинка" class="form-control"/>
             </div>
-            <div class="col">
+            <div class="col-1">
                 <button type="submit" class="btn btn-success">Добавить</button>
+            </div>
+            <div class="col-2">
+                <a th:href="'/keywords/pict'" role="button" class="btn btn-outline-warning"  aria-pressed="true"> Обновить ИД из базы </a>
             </div>
         </div>
     </form>
@@ -34,6 +37,7 @@
         <th>Ключевое слово</th>
         <th>Тег</th>
         <th>Картинка</th>
+        <th>ID pict</th>
         <th>Edit</th>
         <th>Del</th>
     </tr>
@@ -42,9 +46,10 @@
         <td th:marginwidth="10"  th:text="${el.key_words}"></td>
         <td th:text="${el.tag}"></td>
         <td th:text="${el.pict}"></td>
+        <td th:text="${el.id_pict}"></td>
         <!--        <td><button type="button" class="btn btn-warning">Edit</button></td>-->
-        <td><a th:href="'/edit/'+${el.id}" class="btn btn-outline-success btn-sm" role="button" aria-pressed="true">Edit</a></td>
-        <td><a th:href="'/edit/'+${el.id}+'/delete'" class="btn btn-outline-danger btn-sm" role="button" aria-pressed="true">Del</a></td>
+        <td><a th:href="'/keyedit/'+${el.id}" class="btn btn-outline-success btn-sm" role="button" aria-pressed="true">Edit</a></td>
+        <td><a th:href="'/keyedit/'+${el.id}+'/delete'" class="btn btn-outline-danger btn-sm" role="button" aria-pressed="true">Del</a></td>
     </tr>
 </table>
 
