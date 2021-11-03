@@ -14,6 +14,12 @@ public class Words3 {
     public Words3() {
     }
 
+    public Words3(Long id, String word, String sinonim) {
+        this.id = id;
+        this.word = word;
+        this.sinonim = sinonim;
+    }
+
     public Words3(String word, String sinonim) {
         this.word = word;
         this.sinonim = sinonim;

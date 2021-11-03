@@ -7,8 +7,7 @@
 </head>
 <body>
 <header th:insert="parts/header :: header"></header>
-<div class="container-fluid">
-    <br>
+<div class="container-fluid my-2 mx-3">
     <form method="post">
         <div class="form-group row">
             <div class="col-3">
@@ -28,9 +27,8 @@
             </div>
         </div>
     </form>
-    <br>
 </div>
-
+<hr>
 <table class="table table-sm table-responsive">
     <tr>
         <th>ID</th>
@@ -53,6 +51,6 @@
     </tr>
 </table>
 
-<!--<header th:insert="parts/footer :: footer"></header>-->
+<header th:insert="parts/footer :: footer"></header>
 </body>
 </html>

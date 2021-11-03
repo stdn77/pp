@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import ua.com.pedpresa.pp.domain.KeyWord;
 import ua.com.pedpresa.pp.domain.PostMod;
 import ua.com.pedpresa.pp.repos.KeyWordRepo;
+import ua.com.pedpresa.pp.service.PushService;
 import ua.com.pedpresa.pp.service.WordService;
 
 import java.util.ArrayList;
@@ -23,6 +24,8 @@ public class KeywordController {
     private KeyWordRepo keyWordRepo;
     @Autowired
     private WordService wordService;
+    @Autowired
+    private PushService pushService;
 
     @GetMapping("/keywords")
     public String keyWordsEdit(Model model){
@@ -83,7 +86,6 @@ public class KeywordController {
     @GetMapping("/keyedit/{id}/delete")
     public String keyDelete(@PathVariable Long id, Model model) {
     keyWordRepo.deleteById(id);
-
         Iterable<KeyWord> keyWords = keyWordRepo.findAllByOrderByIdDesc();
         model.addAttribute("keywords",keyWords);
         return "redirect:/keywords";
@@ -91,9 +93,7 @@ public class KeywordController {
 
     @GetMapping("/keywords/pict")
     public String updatePictId(Model model){
-        System.out.println("+++++++++++++++++++ HERE");
-        wordService.updatePictIdFromDB();
+        pushService.updatePictIdFromDB();
         return  "redirect:/keywords";
     }
-
 }

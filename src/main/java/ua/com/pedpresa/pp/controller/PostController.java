@@ -5,6 +5,7 @@ import ua.com.pedpresa.pp.domain.KeyWord;
 import ua.com.pedpresa.pp.domain.PostMod;
 import ua.com.pedpresa.pp.repos.KeyWordRepo;
 import ua.com.pedpresa.pp.repos.PostModRepo;
+import ua.com.pedpresa.pp.service.PushService;
 import ua.com.pedpresa.pp.service.WordService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -20,6 +21,8 @@ public class PostController {
     private final PostModRepo postModRepo;
     @Autowired
     private WordService wordService;
+    @Autowired
+    private PushService pushService;
 
     public PostController(PostModRepo postModRepo) {
         this.postModRepo = postModRepo;

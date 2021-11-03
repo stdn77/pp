@@ -76,14 +76,13 @@ public class WordService {
 
     /**
      * @param title
-     * @param text
-     * !!! important (more keywords with two title & one text)
+     * @param text  !!! important (more keywords with two title & one text)
      * @return List of words with Freq >2 (minFreq)
      * Use 2title + 1text (for more weight of title)
      */
     public List<String> getWordsList(String title, String text) {
         List<String> freqList = new ArrayList<>();
-        List<String> wordsList = List.of(stringNormalize(title+" "+title+" "+text).trim().split(" "));
+        List<String> wordsList = List.of(stringNormalize(title + " " + title + " " + text).trim().split(" "));
         int minFreq = Math.max(wordsList.size() / 150, 2);
 
         LinkedHashMap<String, Integer> reverseSortedMap = getSortedMap(wordsList);
@@ -100,7 +99,7 @@ public class WordService {
         Map<String, Integer> wordsMap = new HashMap<>();
         for (String s : wordsList) {
             String z = wordNormalize(s);
-            if (wordsMap.containsKey(wordNormalize(z))) wordsMap.replace(wordNormalize(z), wordsMap.get(z)+1);
+            if (wordsMap.containsKey(wordNormalize(z))) wordsMap.replace(wordNormalize(z), wordsMap.get(z) + 1);
             else wordsMap.put(z, 1);
         }
         LinkedHashMap<String, Integer> reverseSortedMap = new LinkedHashMap<>();
@@ -118,16 +117,16 @@ public class WordService {
      * @return List of keywords from DB equals with text
      * May change
      */
-    public List<String> getKeywords(String title, String text){
+    public List<String> getKeywords(String title, String text) {
         List<String> wordsFromRepo = new ArrayList<>();
         for (KeyWord key : keyWordRepo.findAll()) {
             wordsFromRepo.add(key.getKey_words());
         }
-        List<String> freqListWithNum = getWordsList(stringNormalize(title),stringNormalize(text));
+        List<String> freqListWithNum = getWordsList(stringNormalize(title), stringNormalize(text));
         List<String> freqList = new ArrayList<>();
         List<String> keywords = new ArrayList<>();
         for (String s : freqListWithNum) {
-            freqList.add(s.substring(0,s.lastIndexOf("-")-1));
+            freqList.add(s.substring(0, s.lastIndexOf("-") - 1));
 //            System.out.println("|"+s.substring(0,s.lastIndexOf("-")-1)+"|");
         }
         int partOfword;
@@ -145,7 +144,7 @@ public class WordService {
 //            System.out.println(w.length +" === "+partOfword);
             if (partOfword == w.length) {
                 keywords.add(s);
-            } else if (w.length > 1 && partOfword > 1 && w.length == partOfword-1) keywords.add(s);
+            } else if (w.length > 1 && partOfword > 1 && w.length == partOfword - 1) keywords.add(s);
         }
         return keywords;
     }
@@ -174,10 +173,10 @@ public class WordService {
     }
 
     public static String wordNormalize(String str) {
-        if(!str.isEmpty()) {
+        if (!str.isEmpty()) {
             char f = str.trim().charAt(0);
             if (PUNCT.indexOf(f) >= 0) str = str.substring(1);
-            if(!str.isEmpty()) {
+            if (!str.isEmpty()) {
                 char l = str.trim().charAt(str.length() - 1);
                 if (PUNCT.indexOf(l) >= 0) {
                     str = str.substring(0, str.length() - 1);
@@ -188,69 +187,22 @@ public class WordService {
         return str;
     }
 
-    public String stringNormalize(String text){
+    public String stringNormalize(String text) {
         text
-                .replace(",.",",")
-                .replace("  "," ")
-                .replace("COVID","СOVID");
+                .replace(",.", ",")
+                .replace("  ", " ")
+                .replace("COVID", "СOVID");
         return text;
     }
 
-    public String getPict(String kw){
-        if (kw==null) return "";
+    public String getPict(String kw) {
+        if (kw == null) return "";
         Iterable<KeyWord> kwAll = keyWordRepo.findAll();
         for (KeyWord keyWord : kwAll) {
-            if(keyWord.getKey_words().equals(kw)) {
-              return   keyWord.getPict();
+            if (keyWord.getKey_words().equals(kw)) {
+                return keyWord.getPict();
             }
         }
         return "";
     }
-
-    public void updatePictIdFromDB(){
-        Map<Long,String> pictMap = new HashMap<>();
-        Iterable<KeyWord> kwAll = keyWordRepo.findAll();
-        for (KeyWord keyWord : kwAll) {
-            if(keyWord.getId_pict() == null || keyWord.getId_pict() == 0L) {
-                pictMap.put(keyWord.getId(), keyWord.getPict());
-            }
-        }
-//        SELECT ID FROM wp_posts WHERE guid = 'https://pedpresa.com.ua/wp-content/uploads/2020/08/MOZ.png';
-
-        File file = new File("src/main/resources/application.properties");
-        java.util.Properties properties = new java.util.Properties();
-        try {
-            properties.load(new FileReader(file));
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            Connection con = DriverManager.getConnection(
-                    properties.getProperty("spring.datasource.url"),
-                    properties.getProperty("spring.datasource.username"),
-                    properties.getProperty("spring.datasource.password"));
-            PreparedStatement ps = con.prepareStatement("SELECT ID FROM wp_posts WHERE guid = ?");
-            for (Map.Entry<Long, String> entry : pictMap.entrySet()) {
-                System.out.println(entry.getKey()+"  "+entry.getValue());
-                ps.setString(1,entry.getValue());
-                ResultSet rs = ps.executeQuery();
-                Long idPict = null;
-                while (rs.next()) {
-                    idPict = rs.getLong(1);
-                }
-                System.out.println(idPict);
-                Optional<KeyWord> ikw = keyWordRepo.findById(entry.getKey());
-                List<KeyWord> res = new ArrayList<>();
-                ikw.ifPresent(res::add);
-                if(res.size() == 1) {
-                    KeyWord keyWord = res.get(0);
-                    keyWord.setId_pict(idPict);
-                    keyWordRepo.save(keyWord);
-                }
-            }
-            con.close();
-        } catch (SQLException | ClassNotFoundException | IOException e) {
-            e.printStackTrace();
-        }
-
-
-    }
-
 }

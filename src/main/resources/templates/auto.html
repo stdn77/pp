@@ -8,15 +8,19 @@
 <body>
 <header th:insert="parts/header :: header"></header>
 <!--<h5 th:text="${kw}"></h5>-->
-<div class="container align-items-center bg-light">
-    <span th:text="'Таблица №'+${kw}"/>
+<div class="container align-items-center">
+    <span th:text="'Таблица №'+${tab}"/>
 </div>
-<div  th:each="el : ${list}">
-    <div class="input-group">
-        &nbsp<input type="text" th:value="${el.word}" aria-label="Слово/фраза" class="form-control mt-2">&nbsp
-        <input type="text" th:value="${el.sinonim}" aria-label="Замена" class="form-control mt-2">&nbsp
-        <a th:href="'/auto/'+${kw}+'/delete/'+${el.id}" class="btn btn-danger btn-sm mt-2" role="button" aria-pressed="true">Del</a> &nbsp
-    </div>
+<div  th:each="el : ${replaceWords}">
+    <form method="post" th:action="'/auto/'+${tab}+'/update/'+${el.id}">
+        <div class="input-group">
+            &nbsp<input type="text" id="w" name="w" th:value="${el.word}" aria-label="Слово/фраза" class="form-control mt-2">&nbsp
+            <input type="text" id="s" name="s" th:value="${el.sinonim}" aria-label="Замена" class="form-control mt-2">&nbsp
+            <button type="submit" class="btn btn-success btn-sm mt-2" role="button" aria-pressed="true">OK</button> &nbsp
+            <a th:href="'/auto/'+${tab}+'/delete/'+${el.id}" class="btn btn-danger btn-sm mt-2" role="button" aria-pressed="true">Del</a> &nbsp
+        </div>
+    </form>
 </div>
+<header th:insert="parts/footer :: footer"></header>
 </body>
 </html>
