@@ -16,16 +16,16 @@ public class PostMod {
     private String text_mod;
     private String text_mod_tag;
     private String key_words;
-//    @ManyToOne
     private String main_keyword;
     private String pict;
+    private Long id_pict;
     private Integer isEx;
 
 
     public PostMod() {
     }
 
-    public PostMod(Long id, Long canonical, String title_origin, String text_origin, String title_mod, String text_mod, String text_mod_tag, String key_words, String main_keyword, String pict, Integer isEx) {
+    public PostMod(Long id, Long canonical, String title_origin, String text_origin, String title_mod, String text_mod, String text_mod_tag, String key_words, String main_keyword, String pict, Long id_pict, Integer isEx) {
         this.id = id;
         this.canonical = canonical;
         this.title_origin = title_origin;
@@ -36,6 +36,7 @@ public class PostMod {
         this.key_words = key_words;
         this.main_keyword = main_keyword;
         this.pict = pict;
+        this.id_pict = id_pict;
         this.isEx = isEx;
     }
 
@@ -117,6 +118,14 @@ public class PostMod {
 
     public void setPict(String pict) {
         this.pict = pict;
+    }
+
+    public Long getId_pict() {
+        return id_pict;
+    }
+
+    public void setId_pict(Long id_pict) {
+        this.id_pict = id_pict;
     }
 
     public Integer getIsEx() {

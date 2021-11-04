@@ -195,12 +195,12 @@ public class WordService {
         return text;
     }
 
-    public String getPict(String kw) {
+    public String getPictString(String kw) {
         if (kw == null) return "";
         Iterable<KeyWord> kwAll = keyWordRepo.findAll();
         for (KeyWord keyWord : kwAll) {
             if (keyWord.getKey_words().equals(kw)) {
-                return keyWord.getPict();
+                return keyWord.getPict()+"*"+keyWord.getId_pict();
             }
         }
         return "";

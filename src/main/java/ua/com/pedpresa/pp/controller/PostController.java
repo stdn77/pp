@@ -30,77 +30,84 @@ public class PostController {
 
 
     @GetMapping("/news")
-    public String newsList(Model model){
+    public String newsList(Model model) {
         Iterable<PostMod> postMods = postModRepo.findAllByOrderByIdDesc();
-        model.addAttribute("posts",postMods);
-    return "news";
+        model.addAttribute("posts", postMods);
+        return "news";
     }
 
     @GetMapping("/edit/{id}")
-    public String newsEdit(@PathVariable (value = "id") long id, Model model){
-        if(!postModRepo.existsById(id)) return "news";
+    public String newsEdit(@PathVariable(value = "id") long id, Model model) {
+        if (!postModRepo.existsById(id)) return "news";
         Optional<PostMod> editPost = postModRepo.findById(id);
         List<PostMod> res = new ArrayList<>();
         editPost.ifPresent(res::add);
         String title = res.get(0).getTitle_mod();
         String text = res.get(0).getText_mod();
-        List<String> kws = wordService.getKeywords(title,text);
+        List<String> kws = wordService.getKeywords(title, text);
         kws.forEach(System.out::println);
 //        if(kws.size()>1 && res.get(0).getMain_keyword()!=null) {
 //            if(kws.contains(res.get(0).getMain_keyword())) System.out.println(res.get(0).getMain_keyword()+" 1111");
 //            kws.add(res.get(0).getMain_keyword());
 //        }
         model.addAttribute("keywords", kws);
-        model.addAttribute("freqList",wordService.getWordsList(title,text));
-        model.addAttribute("count",postModRepo.count());
-        model.addAttribute("post",res);
+        model.addAttribute("freqList", wordService.getWordsList(title, text));
+        model.addAttribute("count", postModRepo.count());
+        model.addAttribute("post", res);
         return "edit";
     }
 
     @PostMapping("/edit/{id}")
     public String newsChange(
-            @PathVariable (value = "id") long id,
+            @PathVariable(value = "id") long id,
             @RequestParam(required = false) String text_old,
             @RequestParam(required = false) String text_new,
             Model model) {
 
 //        System.out.println("*************************** HERE");
-        wordService.addSinonim(text_old,text_new);
+        wordService.addSinonim(text_old, text_new);
         Optional<PostMod> editPost = postModRepo.findById(id);
         List<PostMod> res = new ArrayList<>();
         editPost.ifPresent(res::add);
-        if(res.size() == 1) {
+        if (res.size() == 1) {
             PostMod pm = res.get(0);
-            pm.setTitle_mod(pm.getTitle_mod().replaceAll(text_old,text_new));
-            pm.setText_mod(pm.getText_mod().replaceAll(text_old,text_new));
-            pm.setText_mod_tag(pm.getText_mod_tag().replaceAll(text_old,text_new));
+            pm.setTitle_mod(pm.getTitle_mod().replaceAll(text_old, text_new));
+            pm.setText_mod(pm.getText_mod().replaceAll(text_old, text_new));
+            pm.setText_mod_tag(pm.getText_mod_tag().replaceAll(text_old, text_new));
             postModRepo.save(pm);
-            res.set(0,pm);
+            res.set(0, pm);
         }
-        return newsEdit(id,model);
+        return newsEdit(id, model);
     }
 
     @PostMapping("/edit/{id}/key/")
     public String choiceKeyWord(
-            @PathVariable (value = "id") long id,
+            @PathVariable(value = "id") long id,
             @RequestParam(required = false) String kw,
-            Model model){
+            Model model) {
 
         Optional<PostMod> editPost = postModRepo.findById(id);
         List<PostMod> res = new ArrayList<>();
         editPost.ifPresent(res::add);
-        if(res.size() == 1) {
+        if (res.size() == 1) {
             PostMod pm = res.get(0);
             pm.setMain_keyword(kw);
-            pm.setPict(wordService.getPict(kw));
+            String pictAndId = wordService.getPictString(kw);
+            System.out.println(pictAndId);
+//            System.out.println(pictAndId.substring(0,pictAndId.indexOf("*")));
+//            System.out.println(pictAndId.substring(pictAndId.lastIndexOf("*")+1));
+            if (pictAndId != null && !pictAndId.isEmpty()) {
+                pm.setPict(pictAndId.substring(0, pictAndId.indexOf("*")));
+                pm.setId_pict(Long.parseLong(pictAndId.substring(pictAndId.lastIndexOf("*") + 1)));
+            }
             postModRepo.save(pm);
         }
-        return newsEdit(id,model);
+        return newsEdit(id, model);
     }
 
 
     @GetMapping("/edit/{id}/delete")
-    public String newsDelete(@PathVariable (value = "id") long id, Model model) {
+    public String newsDelete(@PathVariable(value = "id") long id, Model model) {
         if (!postModRepo.existsById(id)) return "news";
         postModRepo.deleteById(id);
         wordService.updateNewsSeq();
@@ -108,10 +115,17 @@ public class PostController {
     }
 
     @GetMapping("/edit/{id}/push")
-    public String newsPush(@PathVariable (value = "id") long id, Model model) {
+    public String newsPush(@PathVariable(value = "id") long id, Model model) {
         if (!postModRepo.existsById(id)) return "news";
-        postModRepo.deleteById(id);
-        wordService.updateNewsSeq();
+        Optional<PostMod> editPost = postModRepo.findById(id);
+        List<PostMod> res = new ArrayList<>();
+        editPost.ifPresent(res::add);
+        if (res.size() == 1) {
+            PostMod pm = res.get(0);
+            pushService.pushPost(pm);
+            pm.setIsEx(1);
+            postModRepo.save(pm);
+        }
         return newsList(model);
     }
 }

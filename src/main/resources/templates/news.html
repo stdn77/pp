@@ -9,7 +9,7 @@
 <header th:insert="parts/header :: header"></header>
 <div class="container-fluid">
     <table class="table table-sm table-responsive">
-        <tr th:each="el : ${posts}">
+        <tr th:each="el : ${posts}" th:bgcolor="${el.getIsEx()} == 1 ? '#85F07E' : 'white'">
             <td th:text="${el.id} + ' '"></td>
 
             <td th:marginwidth="10"  th:text="${el.canonical}"></td>
