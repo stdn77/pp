@@ -94,15 +94,13 @@ public class PostController {
             pm.setMain_keyword(kw);
             String pictAndId = wordService.getPictString(kw);
             System.out.println(pictAndId);
-//            System.out.println(pictAndId.substring(0,pictAndId.indexOf("*")));
-//            System.out.println(pictAndId.substring(pictAndId.lastIndexOf("*")+1));
             if (pictAndId != null && !pictAndId.isEmpty()) {
                 pm.setPict(pictAndId.substring(0, pictAndId.indexOf("*")));
                 pm.setId_pict(Long.parseLong(pictAndId.substring(pictAndId.lastIndexOf("*") + 1)));
             }
             postModRepo.save(pm);
         }
-        return newsEdit(id, model);
+        return "redirect:/edit/{id}";
     }
 
 
@@ -126,6 +124,6 @@ public class PostController {
             pm.setIsEx(1);
             postModRepo.save(pm);
         }
-        return newsList(model);
+        return "redirect:/news";
     }
 }

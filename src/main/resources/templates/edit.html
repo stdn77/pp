@@ -40,7 +40,8 @@
             <div class="col" th:utext="${el.text_mod_tag}"></div>
             <div class="col-2 vl" align="center">
                 <td><a th:href="'/edit/'+${el.id}+'/delete'" class="btn btn-danger btn-sm mt-2" role="button" aria-pressed="true">Удалить</a></td>
-                <td><a th:href="'/edit/'+${el.id}+'/push'" class="btn btn-success btn-sm mt-2" role="button" aria-pressed="true">Отправить</a></td><br><br>
+                <td><a th:href="'/edit/'+${el.id}+'/push'" class="btn btn-success btn-sm mt-2" role="button" aria-pressed="true">Отправить</a></td><br>
+                <td><strong th:text="${el.canonical}"/></td><br>
                 <td><a th:href="'/keywords'" class="text mt-3">Ключевые слова</a></td>
                 <div class="border">
                     <div th:each="fw : ${freqList} ">
@@ -50,7 +51,7 @@
                 <br>
                 <form method="post" class="border" th:action="'/edit/'+${el.id}+'/key/'">
                     <div class="form-check" th:each="kw : ${keywords}">
-                        <input class="form-check-input" type="radio" name="kw" id="keyword" th:value="*{kw}"  checked />
+                        <input class="form-check-input mx-1" type="radio" name="kw" id="keyword" th:value="*{kw}"  checked />
                         <label class="form-check-label"  align="left"  th:text="${kw}" for="keyword"/>
                     </div>
 

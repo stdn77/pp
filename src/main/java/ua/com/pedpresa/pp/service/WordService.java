@@ -118,34 +118,45 @@ public class WordService {
      * May change
      */
     public List<String> getKeywords(String title, String text) {
+        List<String> keywords = new ArrayList<>();
         List<String> wordsFromRepo = new ArrayList<>();
         for (KeyWord key : keyWordRepo.findAll()) {
             wordsFromRepo.add(key.getKey_words());
         }
-        List<String> freqListWithNum = getWordsList(stringNormalize(title), stringNormalize(text));
-        List<String> freqList = new ArrayList<>();
-        List<String> keywords = new ArrayList<>();
-        for (String s : freqListWithNum) {
-            freqList.add(s.substring(0, s.lastIndexOf("-") - 1));
-//            System.out.println("|"+s.substring(0,s.lastIndexOf("-")-1)+"|");
+
+        String string = title + " "+title + " "+text;
+
+        for(String key : wordsFromRepo) {
+            if(string.contains(key)) keywords.add(key);
         }
-        int partOfword;
-        for (String s : wordsFromRepo) {
-            partOfword = 0;
-            String[] w = s.split(" ");
-            for (int i = 0; i < w.length; i++) {
-//                System.out.println(w[i]);
-                if (freqList.contains(wordNormalize(w[i]))) {
-//                    keywords.add(s);
-                    partOfword++;
-//                    System.out.println(s);
-                }
-            }
-//            System.out.println(w.length +" === "+partOfword);
-            if (partOfword == w.length) {
-                keywords.add(s);
-            } else if (w.length > 1 && partOfword > 1 && w.length == partOfword - 1) keywords.add(s);
-        }
+
+//
+//
+//
+//        List<String> freqListWithNum = getWordsList(stringNormalize(title), stringNormalize(text));
+//        List<String> freqList = new ArrayList<>();
+//
+//        for (String s : freqListWithNum) {
+//            freqList.add(s.substring(0, s.lastIndexOf("-") - 1));
+////            System.out.println("|"+s.substring(0,s.lastIndexOf("-")-1)+"|");
+//        }
+//        int partOfword;
+//        for (String s : wordsFromRepo) {
+//            partOfword = 0;
+//            String[] w = s.split(" ");
+//            for (int i = 0; i < w.length; i++) {
+////                System.out.println(w[i]);
+//                if (freqList.contains(wordNormalize(w[i]))) {
+////                    keywords.add(s);
+//                    partOfword++;
+////                    System.out.println(s);
+//                }
+//            }
+////            System.out.println(w.length +" === "+partOfword);
+//            if (partOfword == w.length) {
+//                keywords.add(s);
+//            } else if (w.length > 1 && partOfword > 1 && w.length == partOfword - 1) keywords.add(s);
+//        }
         return keywords;
     }
 
